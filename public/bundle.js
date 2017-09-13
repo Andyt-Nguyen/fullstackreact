@@ -22917,7 +22917,9 @@ var App = function (_Component) {
 
 		_this.state = {
 			list: [],
-			userInfo: {}
+			userInfo: [],
+			location: [],
+			time: []
 		};
 		_this.handleNewList = _this.handleNewList.bind(_this);
 		return _this;
@@ -22938,13 +22940,23 @@ var App = function (_Component) {
 			}).then(function (data) {
 				var lat = data.lat;
 				var lon = data.lon;
-				// console.log(data);
+				_this2.setState({ location: { city: data.city, region: data.region } });
 				return weatherPromise(lat, lon);
 			}).then(function (res) {
 				return res.json();
 			}).then(function (data) {
-				return _this2.setState({ userInfo: data });
+				return _this2.setState({ userInfo: { temp: data.main.temp, desc: data.weather[0].description.toUpperCase() } });
 			});
+		}
+	}, {
+		key: 'getCurrentTime',
+		value: function getCurrentTime() {
+			var currentTime = new Date();
+			var minutes = currentTime.getMinutes().toString();
+			var hours = currentTime.getHours();
+			var time0 = hours + ":0" + minutes;
+			var time = hours + ":" + minutes;
+			minutes.length === 1 ? this.setState({ time: time0 }) : this.setState({ time: time });
 		}
 	}, {
 		key: 'getList',
@@ -22976,8 +22988,30 @@ var App = function (_Component) {
 			});
 		}
 	}, {
+		key: 'handleDelete',
+		value: function handleDelete(listId) {
+			console.log(listId);
+			var list = this.state.list;
+			var index = list.findIndex(function (a) {
+				return a.id === listId;
+			});
+			list.splice(index, 1);
+			this.setState({ list: list }, function () {
+				var promise = fetch('/api/todos', {
+					method: "DELETE",
+					headers: {
+						'Accept': 'application/json, text/plain, */*',
+						'Content-type': 'application/json'
+					},
+					body: JSON.stringify({ id: listId })
+				});
+				return promise;
+			});
+		}
+	}, {
 		key: 'componentDidMount',
 		value: function componentDidMount() {
+			this.getCurrentTime();
 			this.getWeather();
 			this.getList();
 		}
@@ -22987,12 +23021,12 @@ var App = function (_Component) {
 			return _react2.default.createElement(
 				'div',
 				null,
-				_react2.default.createElement(_Header2.default, { userInfo: this.state.userInfo }),
+				_react2.default.createElement(_Header2.default, { time: this.state.time, location: this.state.location, userInfo: this.state.userInfo }),
 				_react2.default.createElement(
 					'div',
 					{ className: 'separationBlock' },
 					_react2.default.createElement(_Form2.default, { addNewList: this.handleNewList }),
-					_react2.default.createElement(_TodoPage2.default, { list: this.state.list })
+					_react2.default.createElement(_TodoPage2.default, { onDelete: this.handleDelete.bind(this), list: this.state.list })
 				)
 			);
 		}
@@ -23303,14 +23337,27 @@ var TodoPage = function (_Component) {
 	function TodoPage() {
 		_classCallCheck(this, TodoPage);
 
-		return _possibleConstructorReturn(this, (TodoPage.__proto__ || Object.getPrototypeOf(TodoPage)).apply(this, arguments));
+		var _this = _possibleConstructorReturn(this, (TodoPage.__proto__ || Object.getPrototypeOf(TodoPage)).call(this));
+
+		_this.state = {};
+		return _this;
 	}
 
 	_createClass(TodoPage, [{
+		key: 'onDelete',
+		value: function onDelete(id) {
+			this.props.onDelete(id);
+		}
+	}, {
 		key: 'render',
 		value: function render() {
+			var _this2 = this;
+
 			var todoList = this.props.list.map(function (a, i) {
-				return _react2.default.createElement(_TodoList2.default, _extends({ key: i }, a));
+				return _react2.default.createElement(_TodoList2.default, _extends({
+					key: i,
+					onDelete: _this2.onDelete.bind(_this2)
+				}, a));
 			});
 			return _react2.default.createElement(
 				'div',
@@ -23353,16 +23400,29 @@ var TodoList = function TodoList(props) {
 		"li",
 		{ className: "todoBlock__li" },
 		_react2.default.createElement(
-			"h2",
-			{ className: "todoBlock__list" },
-			props.title,
-			" | ",
-			props.the_time
+			"div",
+			null,
+			_react2.default.createElement(
+				"h2",
+				{ className: "todoBlock__list" },
+				props.title,
+				" | ",
+				props.the_time
+			),
+			_react2.default.createElement(
+				"h4",
+				{ className: "todoBlock__list todoBlock--desc" },
+				props.action
+			)
 		),
 		_react2.default.createElement(
-			"h4",
-			{ className: "todoBlock__list todoBlock--desc" },
-			props.action
+			"span",
+			{
+				onClick: function onClick() {
+					return props.onDelete(props.id);
+				},
+				style: { border: " 2px solid red", borderRadius: '50%', padding: 0, margin: 0, paddingLeft: '5px', color: "red", cursor: "pointer", alignSelf: "center" } },
+			"X"
 		)
 	);
 };
@@ -23378,7 +23438,7 @@ exports = module.exports = __webpack_require__(25)(undefined);
 
 
 // module
-exports.push([module.i, ".todoBlock {\n\tflex:2;\n}\n\n.todoBlock__list {\n\tmargin:0;\n\tpadding:0\n}\n\n.todoBlock__li {\n\tbackground:#A2AEBB;\n\tborder-radius: 3px;\n\tpadding: 20px;\n\ttext-align: left;\n\tlist-style: none;\n\tcolor: white;\n\theight: 60px;\n\tmargin-bottom: 20px;\n\tletter-spacing: 5px;\n}\n\n\n.todoBlock--desc {\n\tmargin-left: 15px;\n}\n\n@media (max-width: 800px) {\n\t.todoBlock {\n\t\tdisplay: block;\n\t\twidth: 95%;\n\t}\n}\n\n@media (max-width: 600px) {\n\t.todoBlock__li {\n\t\tdisplay: flex;\n\t\tflex-direction: column;\n\t}\n}\n", ""]);
+exports.push([module.i, ".todoBlock {\n\tflex:2;\n}\n\n.todoBlock__list {\n\tmargin:0;\n\tpadding:0\n}\n\n.todoBlock__li {\n\tbackground:#A2AEBB;\n\tborder-radius: 3px;\n\tpadding: 20px;\n\ttext-align: left;\n\tlist-style: none;\n\tcolor: white;\n\theight: 60px;\n\tmargin-bottom: 20px;\n\tletter-spacing: 5px;\n\tdisplay: flex;\n\tjustify-content: space-between;\n}\n\n\n.todoBlock--desc {\n\tmargin-left: 15px;\n}\n\n@media (max-width: 800px) {\n\t.todoBlock {\n\t\tdisplay: block;\n\t\twidth: 95%;\n\t}\n}\n\n@media (max-width: 600px) {\n\t.todoBlock__li {\n\t\tdisplay: flex;\n\t\tflex-direction: column;\n\t}\n}\n", ""]);
 
 // exports
 
@@ -23403,7 +23463,7 @@ __webpack_require__(197);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var Header = function Header(props) {
-	console.log(props);
+
 	return _react2.default.createElement(
 		"header",
 		{ className: "headerBlock" },
@@ -23413,7 +23473,7 @@ var Header = function Header(props) {
 			_react2.default.createElement(
 				"h3",
 				{ className: "headerBlock__title" },
-				0 === undefined ? "Sorry nothing here" : props.userInfo.weather[0].description
+				props.userInfo.desc
 			),
 			_react2.default.createElement("img", { width: "170px", height: "170px", src: "https://cdn0.iconfinder.com/data/icons/large-weather-icons/512/Dawn.png" })
 		),
@@ -23423,12 +23483,14 @@ var Header = function Header(props) {
 			_react2.default.createElement(
 				"h3",
 				{ className: "headerBlock__title" },
-				"Tucson, AZ"
+				props.location.city,
+				", ",
+				props.location.region
 			),
 			_react2.default.createElement(
 				"h3",
 				{ className: "headerBlock__temp" },
-				"73 ",
+				props.userInfo.temp,
 				_react2.default.createElement(
 					"sup",
 					null,
@@ -23448,7 +23510,8 @@ var Header = function Header(props) {
 			_react2.default.createElement(
 				"time",
 				{ className: "headerBlock__time" },
-				"10:00am"
+				props.time,
+				"am"
 			)
 		)
 	);

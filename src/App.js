@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { weatherApi } from './config';
 import Form from './Components/Form';
-import Todo from './Components/todo/TodoPage';
+import TodoPage from './Components/todo/TodoPage';
 import Header from './Components/Header';
 import "./css/main.css";
 
@@ -10,9 +10,9 @@ class App extends Component {
 		super();
 		this.state = {
 			list: [],
-			userInfo: {},
-			location: {},
-			time: {}
+			userInfo: [],
+			location: [],
+			time: []
 		};
 		this.handleNewList = this.handleNewList.bind(this);
 	}
@@ -67,7 +67,25 @@ class App extends Component {
 		});
 	}
 
-	componentWillMount() {
+	handleDelete(listId) {
+		console.log(listId);
+		let list = this.state.list;
+		let index = list.findIndex( a => a.id === listId)
+		list.splice(index, 1);
+		this.setState({list}, () => {
+			let promise = fetch('/api/todos', {
+				method: "DELETE",
+				headers: {
+					'Accept': 'application/json, text/plain, */*',
+					'Content-type': 'application/json'
+				},
+				body: JSON.stringify({id: listId})
+			});
+			return promise;
+		});
+	}
+
+	componentDidMount() {
 		this.getCurrentTime();
 		this.getWeather();
 		this.getList();
@@ -79,7 +97,7 @@ class App extends Component {
 				<Header time={this.state.time} location={this.state.location} userInfo={this.state.userInfo} />
 				<div className="separationBlock">
 					<Form addNewList={this.handleNewList} />
-					<Todo list={this.state.list} />
+					<TodoPage onDelete={this.handleDelete.bind(this)} list={this.state.list} />
 				</div>
 			</div>
 

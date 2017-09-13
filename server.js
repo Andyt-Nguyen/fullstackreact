@@ -2,12 +2,12 @@ const express = require('express');
 const massive = require('massive');
 const bodyParser = require('body-parser');
 const config = require('./config');
-
+const path = require('path');
 const app = module.exports = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
+app.use(express.static(path.join(__dirname, "/public")));
 //Connect Db
 const conn = massive.connectSync({
 	connectionString: config.connectionString

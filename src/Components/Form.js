@@ -14,7 +14,7 @@ class Form extends Component {
 		e.preventDefault();
 		this.setState({newList: {
 			title: this.refs.title.value,
-			time: this.refs.time.value,
+			the_time: this.refs.time.value,
 			action: this.refs.action.value
 		}}, () => {
 			this.props.addNewList(this.state.newList);

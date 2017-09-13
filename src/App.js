@@ -9,23 +9,7 @@ class App extends Component {
 	constructor() {
 		super();
 		this.state = {
-			list: [
-				{
-					title: "Udall",
-					time: "3:00pm",
-					action: "Go swimming"
-				},
-				{
-					title: "Home",
-					time: "4:20pm",
-					action: "Do homework"
-				},
-				{
-					title: "Baseball",
-					time: "4:59pm",
-					action: "Run 5 miles"
-				}
-			]
+			list: []
 		};
 		this.handleNewList = this.handleNewList.bind(this);
 	}
@@ -48,17 +32,35 @@ class App extends Component {
 			.then(data => console.log(data));
 	}
 
+	getList(){
+		let promise = fetch('/api/todos');
+		return promise.then(res => res.json())
+									.then(data => this.setState({list:data}));
+	}
+
 	handleNewList(newList) {
 		const list = this.state.list;
 		list.push(newList);
-		this.setState({list})
+		this.setState({list},() => {
+			let promise = fetch('/api/todos', {
+				method: "POST",
+				headers: {
+					'Accept': 'application/json, text/plain, */*',
+					'Content-type':"application/json"
+				},
+				body: JSON.stringify({title: newList.title, the_time: newList.the_time, action: newList.action})
+			});
+			return promise;
+		});
 	}
 
 	componentDidMount() {
 		// this.getWeather();
+		this.getList();
 	}
 
 	render() {
+		console.log(this.state);
 		return (
 			<div>
 				<Header />

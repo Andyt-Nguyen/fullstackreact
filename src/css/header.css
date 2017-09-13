@@ -1,0 +1,35 @@
+.headerBlock {
+	background: #00aeef;
+	display: flex;
+	justify-content: space-around;
+}
+
+.headerBlock__title {
+	color: white;
+	font-size: 30px;
+	margin: 0;
+	padding:0;
+	margin-top: 20px;
+	/*border: 2px solid black*/
+}
+
+.headerBlock__temp {
+	margin: 0;
+	padding:0;
+	color: white;
+	font-size: 85px;
+	/*border: 2px solid green;*/
+}
+
+.headerBlock__time {
+	color: white;
+	font-size: 85px;
+	align-self: center;
+}
+
+.time {
+	display: flex;
+	flex-direction: column;
+	/*border: 2px solid red;*/
+	align-items: center;
+}

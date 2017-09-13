@@ -1,0 +1,25 @@
+.todoBlock {
+	flex:2;
+}
+
+.todoBlock__list {
+	margin:0;
+	padding:0
+}
+
+.todoBlock__li {
+	background:#A2AEBB;
+	border-radius: 3px;
+	padding: 20px;
+	text-align: left;
+	list-style: none;
+	color: white;
+	height: 60px;
+	margin-bottom: 20px;
+	letter-spacing: 5px;
+}
+
+
+.todoBlock--desc {
+	margin-left: 15px;
+}

@@ -20,5 +20,7 @@ const mainCtrl = require('./mainCtrl');
 
 app.get('/api/todos', mainCtrl.getList);
 app.post('/api/todos', mainCtrl.addList);
+app.delete('/api/todos', mainCtrl.removeList);
+
 
 app.listen(config.port, () => console.log(`The server is now listening on ${config.port}`))

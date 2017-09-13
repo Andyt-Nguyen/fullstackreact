@@ -9,23 +9,10 @@ class App extends Component {
 	constructor() {
 		super();
 		this.state = {
-			list: [
-				{
-					title: "Home",
-					the_time: "3:00pm",
-					action: "CODE"
-				},
-				{
-					title: "Udall",
-					the_time: "2:10pm",
-					action: "Go swimming"
-				},
-				{
-					title: "Las Vegas",
-					the_time: "9:13pm",
-					action: "Gamble and party"
-				}
-			]
+			list: [],
+			userInfo: {},
+			location: {},
+			time: {}
 		};
 		this.handleNewList = this.handleNewList.bind(this);
 	}
@@ -41,11 +28,21 @@ class App extends Component {
 			.then( data => {
 				let lat = data.lat;
 				let lon = data.lon;
-				// console.log(data);
+				this.setState({location: {city: data.city, region: data.region}})
 				return weatherPromise(lat, lon)
 			})
 			.then(res => res.json())
-			.then(data => console.log(data));
+			.then(data => this.setState({userInfo: {temp:data.main.temp, desc: data.weather[0].description.toUpperCase()}}));
+	}
+
+	getCurrentTime() {
+		const currentTime = new Date();
+		let minutes = currentTime.getMinutes().toString();
+		let hours = currentTime.getHours();
+		let time0 = hours+":0"+minutes;
+		let time = hours + ":" + minutes;
+		minutes.length === 1 ? this.setState({time:time0}) : this.setState({time})
+
 	}
 
 	getList(){
@@ -70,15 +67,16 @@ class App extends Component {
 		});
 	}
 
-	componentDidMount() {
-		// this.getWeather();
+	componentWillMount() {
+		this.getCurrentTime();
+		this.getWeather();
 		this.getList();
 	}
 
 	render() {
 		return (
 			<div>
-				<Header />
+				<Header time={this.state.time} location={this.state.location} userInfo={this.state.userInfo} />
 				<div className="separationBlock">
 					<Form addNewList={this.handleNewList} />
 					<Todo list={this.state.list} />

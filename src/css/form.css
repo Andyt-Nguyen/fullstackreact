@@ -38,3 +38,10 @@
 	border-radius: 3px;
 	color: white;
 }
+
+@media (max-width: 800px) {
+	.form__input {
+		font-size: 30px;
+		height: 40px;
+	}
+}

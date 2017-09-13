@@ -23,3 +23,17 @@
 .todoBlock--desc {
 	margin-left: 15px;
 }
+
+@media (max-width: 800px) {
+	.todoBlock {
+		display: block;
+		width: 95%;
+	}
+}
+
+@media (max-width: 600px) {
+	.todoBlock__li {
+		display: flex;
+		flex-direction: column;
+	}
+}

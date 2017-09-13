@@ -1,4 +1,10 @@
-.center {
+.separationBlock {
 	display: flex;
 	justify-content: center;
+}
+
+@media (max-width:800px) {
+	.separationBlock {
+		flex-direction: column;
+	}
 }

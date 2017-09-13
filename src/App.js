@@ -9,7 +9,23 @@ class App extends Component {
 	constructor() {
 		super();
 		this.state = {
-			list: []
+			list: [
+				{
+					title: "Home",
+					the_time: "3:00pm",
+					action: "CODE"
+				},
+				{
+					title: "Udall",
+					the_time: "2:10pm",
+					action: "Go swimming"
+				},
+				{
+					title: "Las Vegas",
+					the_time: "9:13pm",
+					action: "Gamble and party"
+				}
+			]
 		};
 		this.handleNewList = this.handleNewList.bind(this);
 	}
@@ -60,11 +76,10 @@ class App extends Component {
 	}
 
 	render() {
-		console.log(this.state);
 		return (
 			<div>
 				<Header />
-				<div className="center">
+				<div className="separationBlock">
 					<Form addNewList={this.handleNewList} />
 					<Todo list={this.state.list} />
 				</div>
